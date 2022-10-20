@@ -1,0 +1,13 @@
+.block-editor {
+    .editor-block {
+        @apply relative;
+        .hover-item {
+            display: none;
+        }
+        &:hover {
+            .hover-item {
+                display: block;
+            }
+        }
+    }
+}
