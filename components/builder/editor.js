@@ -1,174 +1,45 @@
 import {Fragment, useState} from "react";
-import {FiArrowDown, FiArrowUp, FiEdit, FiPlus, FiTrash} from "react-icons/fi";
-import {Form, Modal} from "antd";
-import {parseUrl} from "next/dist/shared/lib/router/utils/parse-url";
+import {FiArrowLeft, FiPlus} from "react-icons/fi";
+import EditorPane from "./components/editor_pane";
+import LeftBar from "./components/leftbar";
+import BuilderContext from "./context/builder";
+import RightBar from "./components/rightbar";
 
 const PageBuilder = () => {
-
     const [blocks, setBlocks] = useState([])
     const [reload, setReload] = useState(false)
     const refresh = () => setReload(!reload)
-
     const [current, setCurrent] = useState()
-    const [edit, setEdit] = useState()
+    const [action, setAction] = useState('')
 
-    const plugins = [
-        {
-            name: 'Text',
-            key: "text",
-            component: (props) => {
-                return (
-                    <div className="p-4">
-                        <h1 className="text-4xl">{props.title}</h1>
-                        <p>This is a test component</p>
-                    </div>
-                )
-            },
-            props: [{
-                type: "input",
-                name: 'title',
-                label: "Title",
-                default: "This is Title"
-            }]
-        }
-    ]
-
-    const components = plugins?.reduce((acc, d) => ({...acc, [d.key]: d.component}), {})
-    let editProps = plugins.find(d => d.key === edit?.component)?.props
+    console.log(blocks)
 
     return (
-        <>
-            <div className="flex bg-gray-200 w-full min-h-screen justify-between">
-                <div className="w-20 bg-white p-3">
-                    {plugins?.map((d, index) => (
-                        <div key={index} className="p-2 bg-gray-200" role="button" onDragStart={() => setCurrent(d)}
-                             draggable>
-                            {d?.name}
-                        </div>
-                    ))}
-                </div>
-                <div className="p-4">
-                    <div className="w-[1200px] bg-white min-h-screen mx-auto block-editor">
-                        {blocks?.map((block, index) => {
-                            return (
-                                <div className="editor-block" key={index}>
-                                    <div className="absolute hover-item right-6 top-6">
-                                        <div className="flex">
-                                            <div className="bg-gray-200 p-2 rounded mr-2" onClick={() => {
-                                                blocks.splice(index, 0, {})
-                                                refresh()
-                                            }}>
-                                                <FiPlus className="text-gray-900" size={12} role="button"/>
-                                            </div>
-                                            <div className="bg-gray-200 p-2 rounded mr-2" onClick={() => {
-                                                setEdit({
-                                                    ...block,
-                                                    block_id: index
-                                                })
-                                            }}>
-                                                <FiEdit className="text-gray-900" size={12} role="button"/>
-                                            </div>
-                                            {index > 0 && (
-                                                <div className="bg-gray-200 p-2 rounded mr-2" onClick={() => {
-                                                    let data = blocks.splice(index, 1)
-                                                    blocks.splice(index - 1, 0, ...data)
-                                                    refresh()
-                                                }}>
-                                                    <FiArrowUp className="text-gray-900" size={12} role="button"/>
-                                                </div>
-                                            )}
-
-                                            {index < blocks.length - 1 && (
-                                                <div className="bg-gray-200 p-2 rounded mr-2" onClick={() => {
-                                                    let data = blocks.splice(index, 1)
-                                                    blocks.splice(index + 1, 0, ...data)
-                                                    refresh()
-                                                }}>
-                                                    <FiArrowDown className="text-gray-900" size={12} role="button"/>
-                                                </div>
-                                            )}
-                                            <div className="bg-gray-200 p-2 rounded" onClick={() => {
-                                                blocks.splice(index, 1)
-                                                refresh()
-                                            }}>
-                                                <FiTrash className="text-red-500" size={12} role="button"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {block?.component ? (
-                                        <Block Component={components[block?.component]} pageProps={block.props}/>
-                                    ) : (
-                                        <div className="p-4">
-                                            <div
-                                                className="border border-dashed h-48 flex items-center justify-center rounded"
-                                                onDrop={() => {
-                                                    blocks[index] = {
-                                                        name: current?.name,
-                                                        component: current?.key,
-                                                        props: current?.props?.reduce((acc, d) => ({
-                                                            ...acc,
-                                                            [d.name]: d.default
-                                                        }), {})
-                                                    }
-                                                    refresh()
-                                                }} onDragOver={e => e.preventDefault()}>
-                                                <p className="text-center text-gray-700">Drag And Drop Your Block
-                                                    Here</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )
-                        })}
-
-
-                        <AddBlock onClick={() => setBlocks([...blocks, {}])}/>
+        <BuilderContext.Provider value={{blocks, setBlocks, current, setCurrent, action, setAction, refresh}}>
+            <div className="h-screen">
+                <div className="h-[65px] !border-b border-gray-300 p-4 flex justify-between items-center">
+                    <div className="flex items-center">
+                        <FiArrowLeft size={18} className="mr-2"/>
+                        <span className="text-base">Page Builder</span>
+                    </div>
+                    <div>
+                        <button className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded">Publish</button>
                     </div>
                 </div>
-                <div>
-
+                <div className="flex">
+                    <div className="w-[350px] !border-r border-gray-300">
+                        <LeftBar/>
+                    </div>
+                    <div className=" min-w-[600px] w-[calc(100vw-750px)] bg-gray-100">
+                        <EditorPane/>
+                    </div>
+                    <div className="w-[400px] !border-l border-gray-300">
+                        <RightBar/>
+                    </div>
                 </div>
             </div>
-            <Modal visible={!!edit} onCancel={() => {
-                setEdit(undefined)
-            }} title={edit?.name || "Title"} mask={false} footer={null}>
-                {editProps?.map((d, index) => (
-                    <>
-                        <Inputs key={index} value={blocks[edit?.block_id].props[d?.name]} onChange={value => {
-                            blocks[edit?.block_id].props[d?.name] = value
-                            refresh()
-                        }}/>
-                    </>
-                ))}
-            </Modal>
-        </>
+        </BuilderContext.Provider>
     )
 }
 
 export default PageBuilder
-
-
-export const Block = ({Component = Fragment, pageProps}) => {
-    return <Component {...pageProps}/>
-}
-
-const Inputs = ({type, value, onChange}) => {
-    return (
-        <input value={value} onChange={e => onChange(e.target.value)}/>
-    )
-}
-
-const AddBlock = ({onClick}) => {
-    return (
-        <>
-            <div className="pb-6">
-                <div className="border-b border-dashed w-full h-8 flex justify-center relative">
-                    <div className="bg-gray-400 p-2 absolute -bottom-4 rounded-full" role="button" onClick={onClick}>
-                        <FiPlus className="text-white"/>
-                    </div>
-                </div>
-            </div>
-
-        </>
-    )
-}
