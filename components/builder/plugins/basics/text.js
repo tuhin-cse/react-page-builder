@@ -17,7 +17,7 @@ const textPlugin = {
         type: "rich-text",
         name: 'content',
         label: "Content",
-        default: "Write you content here"
+        default: "<h1>Heading</h1><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>"
     }]
 }
 

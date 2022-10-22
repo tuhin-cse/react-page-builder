@@ -7,7 +7,7 @@ const LeftBar = () => {
     const [current, setCurrent] = useState("add")
 
     const categories = plugins.reduce((acc, d) => {
-        let plugins = d[d?.category] || []
+        let plugins = acc[d?.category] || []
         return {
             ...acc,
             [d?.category]: [...plugins, d]

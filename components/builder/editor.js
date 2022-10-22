@@ -12,8 +12,6 @@ const PageBuilder = () => {
     const [current, setCurrent] = useState()
     const [action, setAction] = useState('')
 
-    console.log(blocks)
-
     return (
         <BuilderContext.Provider value={{blocks, setBlocks, current, setCurrent, action, setAction, refresh}}>
             <div className="h-screen">
