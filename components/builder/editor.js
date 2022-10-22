@@ -1,4 +1,4 @@
-import {Fragment, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import {FiArrowLeft, FiPlus} from "react-icons/fi";
 import EditorPane from "./components/editor_pane";
 import LeftBar from "./components/leftbar";
@@ -11,6 +11,20 @@ const PageBuilder = () => {
     const refresh = () => setReload(!reload)
     const [current, setCurrent] = useState()
     const [action, setAction] = useState('')
+
+    useEffect(() => {
+        console.log(blocks)
+        if (blocks?.length === 0) {
+            let history = localStorage.getItem('block_history')
+            if (!!history) {
+                setBlocks(JSON.parse(history))
+            }
+        } else {
+            localStorage.setItem('block_history', JSON.stringify(blocks))
+        }
+    }, [blocks])
+
+
 
     return (
         <BuilderContext.Provider value={{blocks, setBlocks, current, setCurrent, action, setAction, refresh}}>

@@ -31,7 +31,7 @@ const EditorPane = () => {
                     let editor = document.querySelector("#block-editor-pane")
                     editor.childNodes?.forEach((node, ind) => {
                         let top = node.offsetTop + (node.clientHeight / 2)
-                        if(top > e.clientY && index === -1) {
+                        if (top > e.clientY && index === -1) {
                             index = ind
                         }
                     })
@@ -43,7 +43,7 @@ const EditorPane = () => {
                             [d.name]: d.default
                         }), {})
                     }
-                    if(index === -1) {
+                    if (index === -1) {
                         blocks.push(item)
                     } else {
                         blocks.splice(index, 0, item)
@@ -54,8 +54,9 @@ const EditorPane = () => {
                 <div className="block-editor" id="block-editor-pane">
                     {blocks?.map((block, index) => {
                         return (
-                            <div className="editor-block" key={index}>
-                                <div className="absolute hover-item right-6 top-6">
+                            <div className="relative" key={index}>
+                                <div className="absolute right-6 top-6"
+                                     style={{display: JSON.stringify([index]) === JSON.stringify(current?.block_ids || []) ? 'block' : 'none'}}>
                                     <div className="flex">
                                         {index > 0 && (
                                             <div className="bg-gray-200 p-2 rounded mr-2" onClick={() => {
@@ -87,13 +88,14 @@ const EditorPane = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-4" onClick={() => {
+                                <div onClick={() => {
                                     setCurrent({
                                         ...block,
                                         block_ids: [index]
                                     })
                                 }}>
-                                    <Block Component={components[block?.component]} blockIds={[index]} pageProps={block.props}/>
+                                    <Block Component={components[block?.component]} blockIds={[index]}
+                                           pageProps={block.props} style={block.style}/>
                                 </div>
                             </div>
                         )
@@ -106,9 +108,9 @@ const EditorPane = () => {
 }
 export default EditorPane
 
-export const Block = ({Component = Fragment, pageProps, blockIds}) => {
+export const Block = ({Component = Fragment, pageProps, blockIds, style}) => {
     return (
-        <div>
+        <div className="p-4" style={style}>
             <Component {...pageProps} blockIds={blockIds}/>
         </div>
     )
