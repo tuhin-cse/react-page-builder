@@ -39,13 +39,13 @@ const PageBuilder = () => {
                     </div>
                 </div>
                 <div className="flex">
-                    <div className="w-[350px] !border-r border-gray-300">
+                    <div className="w-[320px] !border-r border-gray-300">
                         <LeftBar/>
                     </div>
-                    <div className=" min-w-[600px] w-[calc(100vw-750px)] bg-gray-100">
+                    <div className=" min-w-[600px] w-[calc(100vw-700px)] bg-gray-100">
                         <EditorPane/>
                     </div>
-                    <div className="w-[400px] !border-l border-gray-300">
+                    <div className="w-[380px] !border-l border-gray-300">
                         <RightBar/>
                     </div>
                 </div>
